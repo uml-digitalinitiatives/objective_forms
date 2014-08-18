@@ -50,13 +50,21 @@ class FormElement implements ArrayAccess {
    */
   protected $registry;
 
+
+  /**
+   * Index of the current element, within its parent.
+   *
+   * @var string|int
+   */
+  protected $index;
+
   /**
    * Instantiate's a FormElement.
    *
    * @param array $form
    *   Drupal form definition.
    */
-  public function __construct(FormElementRegistry $registry = NULL /* yuck fix this.. */, array $form = NULL) {
+  public function __construct(FormElementRegistry $registry = NULL /* yuck fix this.. */, array $form = NULL, $index = NULL) {
     $this->protected = new ReadOnlyProtectedMembers(array('parent' => NULL, 'hash' => NULL));
     $this->registry = $registry;
     $this->controls = array();
@@ -67,6 +75,7 @@ class FormElement implements ArrayAccess {
     if ($this->registry) {
       $this->registry->registerCreated($this);
     }
+    $this->index = $index;
   }
 
   /**
@@ -109,7 +118,7 @@ class FormElement implements ArrayAccess {
   protected function initializeChildren(array &$form) {
     $children = element_children($form);
     foreach ($children as $key) {
-      $child = new FormElement($this->registry, $form[$key]);
+      $child = new FormElement($this->registry, $form[$key], $key);
       $this->adopt($child, $key);
     }
   }
@@ -594,6 +603,9 @@ class FormElement implements ArrayAccess {
    *   has no parent.
    */
   public function getIndex() {
+    if ($this->index !== NULL) {
+      return $this->index;
+    }
     if (isset($this->parent)) {
       foreach ($this->parent->children as $index => $child) {
         if ($child === $this) {
@@ -667,4 +679,29 @@ class FormElement implements ArrayAccess {
     }
   }
 
+  /**
+   * Get array of parents, similar to Drupal's '#parents'.
+   *
+   * Used to reliably access values posted back from the user.
+   *
+   * @return array
+   */
+  public function getParentsArray() {
+    if ($this->parent === NULL) {
+      // Should only be the top-level "form" element.
+      return array();
+    }
+    elseif (isset($this['#parents'])) {
+      // Potential optimization... Unlikely to hit?
+      return $this['#parents'];
+    }
+    else {
+      if (isset($this['#tree']) && $this['#tree']) {
+        return array_merge($this->parent->getParentsArray(), array($this->getIndex()));
+      }
+      else {
+        return array();
+      }
+    }
+  }
 }
