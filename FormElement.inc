@@ -685,6 +685,8 @@ class FormElement implements ArrayAccess {
    * Used to reliably access values posted back from the user.
    *
    * @return array
+   *   An array of indicies, including this element's, to use to access the
+   *   value for this element in $form_state['values'].
    */
   public function getParentsArray() {
     if ($this->parent === NULL) {
