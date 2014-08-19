@@ -156,6 +156,7 @@ class FormElement implements ArrayAccess {
     if ($this->registry) {
       $this->registry->registerClone($original_hash, $this);
     }
+    $this->index = NULL;
   }
 
   /**
@@ -603,17 +604,15 @@ class FormElement implements ArrayAccess {
    *   has no parent.
    */
   public function getIndex() {
-    if ($this->index !== NULL) {
-      return $this->index;
-    }
-    if (isset($this->parent)) {
+    if ($this->index === NULL && isset($this->parent)) {
       foreach ($this->parent->children as $index => $child) {
         if ($child === $this) {
-          return $index;
+          $this->index = $index;
+          break;
         }
       }
     }
-    return NULL;
+    return $this->index;
   }
 
   /**
