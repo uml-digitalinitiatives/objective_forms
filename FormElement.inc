@@ -64,8 +64,12 @@ class FormElement implements ArrayAccess {
    * @param array $form
    *   Drupal form definition.
    */
-  public function __construct(FormElementRegistry $registry = NULL /* yuck fix this.. */, array $form = NULL, $index = NULL) {
-    $this->protected = new ReadOnlyProtectedMembers(array('parent' => NULL, 'hash' => NULL));
+  public function __construct(FormElementRegistry $registry = NULL /* yuck fix this.. */, array $form = NULL, $index = NULL, $parents = array()) {
+    $this->protected = new ReadOnlyProtectedMembers(array(
+      'parent' => NULL,
+      'hash' => NULL,
+      'parentOffset' => $parents,
+    ));
     $this->registry = $registry;
     $this->controls = array();
     $this->children = array();
@@ -690,7 +694,7 @@ class FormElement implements ArrayAccess {
   public function getParentsArray() {
     if ($this->parent === NULL) {
       // Should only be the top-level "form" element.
-      return array();
+      return $this->parentOffset;
     }
     elseif (isset($this['#parents'])) {
       // Potential optimization... Unlikely to hit?
