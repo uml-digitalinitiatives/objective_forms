@@ -48,13 +48,13 @@ class Form implements ArrayAccess {
    * @param array $form_state
    *   The drupal form state.
    */
-  public function __construct(array $form, array &$form_state) {
+  public function __construct(array $form, array &$form_state, $parents = array()) {
     $this->storage = new FormStorage($form_state);
     $this->storage->elementRegistry = isset($this->storage->elementRegistry) ?
         $this->storage->elementRegistry :
         new FormElementRegistry();
     $this->registry = $this->storage->elementRegistry;
-    $this->root = new FormElement($this->registry, $form);
+    $this->root = new FormElement($this->registry, $form, NULL, $parents);
   }
 
   /**
