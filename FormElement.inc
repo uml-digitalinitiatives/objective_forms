@@ -59,6 +59,14 @@ class FormElement implements ArrayAccess {
   protected $index;
 
   /**
+   * Holds references to the original form default value for the form
+   * element.
+   *
+   * @var ReadOnlyProtected
+   */
+  protected $originalDefaultValue;
+
+  /**
    * Instantiate's a FormElement.
    *
    * @param array $form
@@ -69,6 +77,7 @@ class FormElement implements ArrayAccess {
       'parent' => NULL,
       'hash' => NULL,
       'parentOffset' => $parents,
+      'originalDefaultValue' => NULL,
     ));
     $this->registry = $registry;
     $this->controls = array();
@@ -110,6 +119,10 @@ class FormElement implements ArrayAccess {
     foreach ($properties as $key) {
       // Objectify the property where appropriate.
       $this->controls[$key] = FormProperty::Expand($key, $form[$key]);
+    }
+    // Store the form fields default_value for access when populating defaults.
+    if (isset($form["#default_value"])) {
+      $this->originalDefaultValue = $form["#default_value"];
     }
   }
 
@@ -708,5 +721,12 @@ class FormElement implements ArrayAccess {
         return array();
       }
     }
+  }
+
+  /**
+   * Get the original default form value for the element.
+   */
+  public function getOriginalDefaultValue() {
+    return $this->originalDefaultValue;
   }
 }
