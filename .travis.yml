@@ -25,6 +25,9 @@ before_install:
   - ln -s $TRAVIS_BUILD_DIR sites/all/modules/objective_forms
   - ln -s $HOME/php_lib sites/all/modules/php_lib
   - drush en --yes --user=1 objective_forms
+before_script:
+  # Mysql might time out for long tests, increase the wait timeout.
+  - mysql -e 'SET @@GLOBAL.wait_timeout=1200'
 script:
   - ant -buildfile sites/all/modules/objective_forms/build.xml lint
   - $ISLANDORA_DIR/tests/scripts/line_endings.sh sites/all/modules/objective_forms
