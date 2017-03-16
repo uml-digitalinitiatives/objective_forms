@@ -1,3 +1,4 @@
+sudo: required
 language: php
 php:
   - 5.3.3
@@ -24,9 +25,12 @@ before_install:
   - ln -s $TRAVIS_BUILD_DIR sites/all/modules/objective_forms
   - ln -s $HOME/php_lib sites/all/modules/php_lib
   - drush en --yes --user=1 objective_forms
+before_script:
+  # Mysql might time out for long tests, increase the wait timeout.
+  - mysql -e 'SET @@GLOBAL.wait_timeout=1200'
 script:
   - ant -buildfile sites/all/modules/objective_forms/build.xml lint
   - $ISLANDORA_DIR/tests/scripts/line_endings.sh sites/all/modules/objective_forms
   - drush coder-review --reviews=production,security,style,i18n,potx,sniffer objective_forms
   - phpcpd --names *.module,*.inc,*.test sites/all/modules/objective_forms
-  - drush test-run --user=1 --uri=http://localhost:8081 "Objective Forms"
+  - php scripts/run-tests.sh --php `phpenv which php` --url http://localhost:8081 --verbose "Objective Forms"
