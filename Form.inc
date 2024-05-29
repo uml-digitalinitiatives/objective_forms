@@ -257,7 +257,7 @@ class Form implements ArrayAccess {
    * @return bool
    *   TRUE if the child element or property exists FALSE otherwise.
    */
-  public function offsetExists($offset) {
+  public function offsetExists(mixed $offset): bool {
     return $this->root->offsetExists($offset);
   }
 
@@ -271,7 +271,7 @@ class Form implements ArrayAccess {
    *   Gets a child element or property identified by $offset if it exists
    *   NULL otherwise.
    */
-  public function offsetGet($offset) {
+  public function offsetGet(mixed $offset): mixed {
     return $this->root->offsetGet($offset);
   }
 
@@ -283,7 +283,7 @@ class Form implements ArrayAccess {
    * @param mixed $value
    *   The value
    */
-  public function offsetSet($offset, $value) {
+  public function offsetSet(mixed $offset, mixed $value): void {
     $this->root->offsetSet($offset, $value);
   }
 
@@ -293,7 +293,7 @@ class Form implements ArrayAccess {
    * @param mixed $offset
    *   The offset
    */
-  public function offsetUnset($offset) {
+  public function offsetUnset(mixed $offset): void {
     $this->root->offsetUnset($offset);
   }
 

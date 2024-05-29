@@ -181,7 +181,7 @@ class FormElement implements ArrayAccess {
    *
    * Searches this element and all of its children recursively.
    *
-   * @param hash $hash
+   * @param string $hash
    *   The unique #hash property that identifies the FormElement.
    *
    * @return FormElement
@@ -464,7 +464,7 @@ class FormElement implements ArrayAccess {
    * @return bool
    *   TRUE if the child FormElement or control/property exists.
    */
-  public function offsetExists($offset) {
+  public function offsetExists(mixed $offset): bool {
     $child_exists = isset($this->children[$offset]);
     $control_exists = isset($this->controls[$offset]);
     return $child_exists || $control_exists;
@@ -479,11 +479,11 @@ class FormElement implements ArrayAccess {
    * @param mixed $offset
    *   The name of the child FormElement or control/property.
    *
-   * @return mixed
+   * @return mixed|null
    *   If found, this function will return either a child FormElement or a
    *   FormControl.
    */
-  public function offsetGet($offset) {
+  public function offsetGet(mixed $offset): mixed {
     if (array_key_exists($offset, $this->children)) {
       return $this->children[$offset];
     }
@@ -505,7 +505,7 @@ class FormElement implements ArrayAccess {
    *   Either a child FormElement or some mixed value that repersents a
    *   control/property.
    */
-  public function offsetSet($offset, $value) {
+  public function offsetSet(mixed $offset,mixed $value): void {
     if (is_or_descends_from($value, 'FormElement')) {
       $this->adopt($value, $offset);
     }
@@ -522,7 +522,7 @@ class FormElement implements ArrayAccess {
    * @param mixed $offset
    *   The name of the child FormElement or control/property.
    */
-  public function offsetUnset($offset) {
+  public function offsetUnset(mixed $offset): void {
     if (isset($this->children[$offset])) {
       unset($this->children[$offset]);
     }
